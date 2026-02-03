@@ -382,6 +382,202 @@ async def list_tools() -> list[Tool]:
                 "properties": {}
             }
         ),
+        
+        # ==================== Test Cases ====================
+        Tool(
+            name="get_product_testcases",
+            description="Get test cases for a product (获取产品测试用例列表)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "product_id": {
+                        "type": "integer",
+                        "description": "Product ID"
+                    }
+                },
+                "required": ["product_id"]
+            }
+        ),
+        Tool(
+            name="get_testcase",
+            description="Get test case details (获取测试用例详情，包含步骤和预期结果)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "testcase_id": {
+                        "type": "integer",
+                        "description": "Test case ID"
+                    }
+                },
+                "required": ["testcase_id"]
+            }
+        ),
+        Tool(
+            name="create_testcase",
+            description="Create a new test case (创建测试用例)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "product_id": {
+                        "type": "integer",
+                        "description": "Product ID"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Test case title"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Test case type: feature, performance, config, install, security, interface, unit, other"
+                    },
+                    "pri": {
+                        "type": "integer",
+                        "description": "Priority (1-4)"
+                    },
+                    "precondition": {
+                        "type": "string",
+                        "description": "Precondition for the test"
+                    },
+                    "steps": {
+                        "type": "array",
+                        "description": "Test steps",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "desc": {"type": "string", "description": "Step description"},
+                                "expect": {"type": "string", "description": "Expected result"}
+                            }
+                        }
+                    },
+                    "keywords": {
+                        "type": "string",
+                        "description": "Keywords"
+                    }
+                },
+                "required": ["product_id", "title", "type"]
+            }
+        ),
+        
+        # ==================== Test Tasks ====================
+        Tool(
+            name="list_testtasks",
+            description="Get list of test tasks (获取测试单列表)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "page": {
+                        "type": "integer",
+                        "description": "Page number (default: 1)"
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Items per page (default: 20)"
+                    }
+                }
+            }
+        ),
+        Tool(
+            name="get_testtask",
+            description="Get test task details (获取测试单详情)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "testtask_id": {
+                        "type": "integer",
+                        "description": "Test task ID"
+                    }
+                },
+                "required": ["testtask_id"]
+            }
+        ),
+        Tool(
+            name="get_project_testtasks",
+            description="Get test tasks for a project (获取项目的测试单列表)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "type": "integer",
+                        "description": "Project ID"
+                    }
+                },
+                "required": ["project_id"]
+            }
+        ),
+        
+        # ==================== Product Plans ====================
+        Tool(
+            name="get_product_plans",
+            description="Get plans for a product (获取产品计划列表)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "product_id": {
+                        "type": "integer",
+                        "description": "Product ID"
+                    }
+                },
+                "required": ["product_id"]
+            }
+        ),
+        Tool(
+            name="get_plan",
+            description="Get plan details (获取计划详情，包含关联的需求和Bug)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "plan_id": {
+                        "type": "integer",
+                        "description": "Plan ID"
+                    }
+                },
+                "required": ["plan_id"]
+            }
+        ),
+        
+        # ==================== Builds ====================
+        Tool(
+            name="get_project_builds",
+            description="Get builds for a project (获取项目版本列表)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "type": "integer",
+                        "description": "Project ID"
+                    }
+                },
+                "required": ["project_id"]
+            }
+        ),
+        Tool(
+            name="get_execution_builds",
+            description="Get builds for an execution (获取迭代版本列表)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "execution_id": {
+                        "type": "integer",
+                        "description": "Execution ID"
+                    }
+                },
+                "required": ["execution_id"]
+            }
+        ),
+        Tool(
+            name="get_build",
+            description="Get build details (获取版本详情)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "build_id": {
+                        "type": "integer",
+                        "description": "Build ID"
+                    }
+                },
+                "required": ["build_id"]
+            }
+        ),
     ]
 
 
@@ -514,6 +710,69 @@ async def call_tool(name: str, arguments: dict) -> Sequence[TextContent]:
         
         elif name == "get_my_info":
             result = client.get_my_info()
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        # ==================== Test Cases ====================
+        elif name == "get_product_testcases":
+            result = client.get_product_testcases(arguments["product_id"])
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        elif name == "get_testcase":
+            result = client.get_testcase(arguments["testcase_id"])
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        elif name == "create_testcase":
+            data = {
+                "title": arguments["title"],
+                "type": arguments["type"],
+            }
+            if "pri" in arguments:
+                data["pri"] = arguments["pri"]
+            if "precondition" in arguments:
+                data["precondition"] = arguments["precondition"]
+            if "steps" in arguments:
+                data["steps"] = arguments["steps"]
+            if "keywords" in arguments:
+                data["keywords"] = arguments["keywords"]
+            result = client.create_testcase(arguments["product_id"], data)
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        # ==================== Test Tasks ====================
+        elif name == "list_testtasks":
+            result = client.list_testtasks(
+                page=arguments.get("page", 1),
+                limit=arguments.get("limit", 20)
+            )
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        elif name == "get_testtask":
+            result = client.get_testtask(arguments["testtask_id"])
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        elif name == "get_project_testtasks":
+            result = client.get_project_testtasks(arguments["project_id"])
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        # ==================== Product Plans ====================
+        elif name == "get_product_plans":
+            result = client.get_product_plans(arguments["product_id"])
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        elif name == "get_plan":
+            result = client.get_plan(arguments["plan_id"])
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        # ==================== Builds ====================
+        elif name == "get_project_builds":
+            result = client.get_project_builds(arguments["project_id"])
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        elif name == "get_execution_builds":
+            result = client.get_execution_builds(arguments["execution_id"])
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+        
+        elif name == "get_build":
+            result = client.get_build(arguments["build_id"])
             return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
         
         else:

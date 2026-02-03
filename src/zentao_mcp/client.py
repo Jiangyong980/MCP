@@ -257,3 +257,64 @@ class ZentaoClient:
     def get_my_info(self) -> Dict:
         """Get current user info"""
         return self._request("GET", "/user")
+    
+    # ==================== Test Cases ====================
+    
+    def get_product_testcases(self, product_id: int) -> Dict:
+        """Get test cases for a product"""
+        return self._request("GET", f"/products/{product_id}/testcases")
+    
+    def get_testcase(self, testcase_id: int) -> Dict:
+        """Get test case details"""
+        return self._request("GET", f"/testcases/{testcase_id}")
+    
+    def create_testcase(self, product_id: int, data: Dict) -> Dict:
+        """Create a new test case in a product"""
+        return self._request("POST", f"/products/{product_id}/testcases", json_data=data)
+    
+    def update_testcase(self, testcase_id: int, data: Dict) -> Dict:
+        """Update a test case"""
+        return self._request("PUT", f"/testcases/{testcase_id}", json_data=data)
+    
+    def delete_testcase(self, testcase_id: int) -> Dict:
+        """Delete a test case"""
+        return self._request("DELETE", f"/testcases/{testcase_id}")
+    
+    # ==================== Test Tasks ====================
+    
+    def list_testtasks(self, page: int = 1, limit: int = 20) -> Dict:
+        """Get list of test tasks"""
+        params = {"page": page, "limit": limit}
+        return self._request("GET", "/testtasks", params=params)
+    
+    def get_testtask(self, testtask_id: int) -> Dict:
+        """Get test task details"""
+        return self._request("GET", f"/testtasks/{testtask_id}")
+    
+    def get_project_testtasks(self, project_id: int) -> Dict:
+        """Get test tasks for a project"""
+        return self._request("GET", f"/projects/{project_id}/testtasks")
+    
+    # ==================== Product Plans ====================
+    
+    def get_product_plans(self, product_id: int) -> Dict:
+        """Get plans for a product"""
+        return self._request("GET", f"/products/{product_id}/plans")
+    
+    def get_plan(self, plan_id: int) -> Dict:
+        """Get plan details"""
+        return self._request("GET", f"/productplans/{plan_id}")
+    
+    # ==================== Builds ====================
+    
+    def get_project_builds(self, project_id: int) -> Dict:
+        """Get builds for a project"""
+        return self._request("GET", f"/projects/{project_id}/builds")
+    
+    def get_execution_builds(self, execution_id: int) -> Dict:
+        """Get builds for an execution"""
+        return self._request("GET", f"/executions/{execution_id}/builds")
+    
+    def get_build(self, build_id: int) -> Dict:
+        """Get build details"""
+        return self._request("GET", f"/builds/{build_id}")
