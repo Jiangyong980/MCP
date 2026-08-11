@@ -324,9 +324,8 @@ async def list_tools() -> list[Tool]:
                         "description": "Task type: design, devel, request, test, study, discuss, ui, affair, misc"
                     },
                     "assignedTo": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Assigned user accounts"
+                        "type": "string",
+                        "description": "Assigned user account"
                     },
                     "estStarted": {
                         "type": "string",

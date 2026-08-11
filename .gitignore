@@ -11,5 +11,8 @@ wheels/
 
 # tools
 .claude
+.codex/
 .env
 .idea
+.kimi-code/
+opencode.json

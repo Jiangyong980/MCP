@@ -50,7 +50,8 @@ class ZentaoClient:
         method: str,
         path: str,
         params: Optional[Dict] = None,
-        json_data: Optional[Dict] = None
+        json_data: Optional[Dict] = None,
+        _retry: bool = True
     ) -> Any:
         """Make a request to Zentao API"""
         url = f"{self.base_path}{path}"
@@ -64,6 +65,18 @@ class ZentaoClient:
                 params=params,
                 json=json_data
             )
+            # If 401, try to re-authenticate and retry once
+            if response.status_code == 401 and _retry:
+                logger.warning("Token expired, re-authenticating...")
+                self._token = None  # Force re-auth
+                headers = self._get_headers()
+                response = self.session.request(
+                    method=method,
+                    url=url,
+                    headers=headers,
+                    params=params,
+                    json=json_data
+                )
             response.raise_for_status()
             return response.json() if response.text else None
         except requests.RequestException as e:
